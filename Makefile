@@ -1,4 +1,4 @@
-NAME = libft.a
+NAME = ultimate_libft.a
 
 SCRS = ft_atoi.c\
 ft_bzero.c\
@@ -43,6 +43,17 @@ ft_lstdelone_bonus.c\
 ft_lstclear_bonus.c\
 ft_lstiter_bonus.c\
 ft_lstmap_bonus.c\
+ft_print_base10.c\
+ft_print_char.c\
+ft_print_string.c\
+ft_printf.c\
+ft_put_uns_char_fd.c\
+ft_print_lower_hex.c\
+ft_print_upper_hex.c\
+ft_print_uns_base10.c\
+ft_itoa_uns.c\
+ft_print_percentage.c\
+ft_print_ptr.c\
 
 OBJS = $(SCRS:.c=.o)
 
