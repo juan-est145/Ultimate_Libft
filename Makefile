@@ -1,4 +1,4 @@
-NAME = ultimate_libft.a
+NAME = libft.a
 
 SCRS = ft_atoi.c\
 ft_bzero.c\
@@ -82,3 +82,6 @@ re: fclean
 	$(MAKE) all
 
 .Phony: all clean fclean re 
+
+debug: CFLAGS += -g
+debug: all
