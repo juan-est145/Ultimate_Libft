@@ -54,6 +54,8 @@ ft_print_uns_base10.c\
 ft_itoa_uns.c\
 ft_print_percentage.c\
 ft_print_ptr.c\
+get_next_line.c\
+get_next_line_utils.c\
 
 OBJS = $(SCRS:.c=.o)
 
