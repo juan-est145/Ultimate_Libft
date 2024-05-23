@@ -61,7 +61,7 @@ OBJS = $(SCRS:.c=.o)
 
 RM = rm -f
 
-COMPILER = gcc
+CC = clang
 
 CFLAGS = -Wall -Wextra -Werror
 
