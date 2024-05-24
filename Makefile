@@ -61,7 +61,7 @@ OBJS = $(SCRS:.c=.o)
 
 RM = rm -f
 
-CC = clang
+CC = $(shell which cc clang gcc | head -n 1)
 
 CFLAGS = -Wall -Wextra -Werror
 
