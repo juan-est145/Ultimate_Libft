@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juestrel <juestrel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mfuente- <mfuente-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/27 11:53:51 by juestrel          #+#    #+#             */
-/*   Updated: 2024/02/23 13:09:39 by juestrel         ###   ########.fr       */
+/*   Updated: 2024/10/22 17:32:38 by mfuente-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 # define LIBFT_H
 
 # include <stdarg.h>
+# include <stdbool.h>
 # include <stdlib.h>
 # include <unistd.h>
-# include <stdbool.h>
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 10
 # endif
@@ -99,4 +99,11 @@ long					ft_strchr_line(const char *s, int c);
 void					ft_strlcat_gnl(char *dst, const char *src,
 							long special_char_index);
 void					ft_clean_buffer(long special_char_index, char *buffer);
+//----------------------GNL****MIGUEL-----------------------------------
+char					*ft_strchr_gnl(char *s, int c);
+int						aux_gnl(char *final, char *s1, int cont);
+char					*ft_strjoin_gnl(char *s1, char *s2);
+char					*ft_substr_gnl(char *s, unsigned int start, size_t len);
+size_t					ft_strlen_gnl(const char *str);
+char					*ft_free(char *str);
 #endif

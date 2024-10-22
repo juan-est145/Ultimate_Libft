@@ -3,128 +3,103 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juestrel <juestrel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mfuente- <mfuente-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/18 12:45:35 by juestrel          #+#    #+#             */
-/*   Updated: 2024/02/23 13:10:11 by juestrel         ###   ########.fr       */
+/*   Created: 2023/12/18 08:34:30 by mfuente-          #+#    #+#             */
+/*   Updated: 2024/10/22 17:30:06 by mfuente-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
+#include <stdio.h>
 
-static t_strings	*ft_new_node(char *text, long special_char_index);
-
-long	ft_strchr_line(const char *s, int c)
+char	*ft_strchr_gnl(char *s, int c)
 {
-	long	i;
+	int	i;
 
 	i = 0;
-	while (i < BUFFER_SIZE)
+	while (s[i] != '\0')
 	{
 		if (s[i] == (char)c)
-		{
-			return (i);
-		}
+			return (&((char *)s)[i]);
 		i++;
 	}
-	return (-1);
+	if ((char)c == '\0')
+		return (&((char *)s)[i]);
+	return (0);
 }
 
-static t_strings	*ft_new_node(char *text, long special_char_index)
+int	aux_gnl(char *final, char *s1, int cont)
 {
-	t_strings		*new_node;
-	unsigned int	i;
-
-	new_node = NULL;
-	i = 0;
-	new_node = (t_strings *)malloc(sizeof(t_strings));
-	if (new_node == NULL)
+	while (s1[cont])
 	{
+		final[cont] = s1[cont];
+		cont++;
+	}
+	return (cont);
+}
+
+char	*ft_strjoin_gnl(char *s1, char *s2)
+{
+	char	*final;
+	int		len;
+	int		cont;
+
+	if (!s1)
+	{
+		s1 = malloc(sizeof(char) + 1);
+		if (!s1)
+			return (0);
+		s1[0] = 0;
+	}
+	cont = 0;
+	final = (char *)malloc(sizeof(char) * ft_strlen_gnl(s1) + ft_strlen_gnl(s2) + 1);
+	if (!final)
+		return (ft_free(s1));
+	cont = aux_gnl(final, s1, cont);
+	len = 0;
+	while (s2[len])
+		final[cont++] = s2[len++];
+	final[cont] = '\0';
+	ft_free(s1);
+	return (final);
+}
+
+char	*ft_substr_gnl(char *s, unsigned int start, size_t len)
+	{
+	char	*substr;
+	char	*substr2;
+	int		i;
+
+	i = 0;
+	if (!s)
 		return (NULL);
-	}
-	new_node->text = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	if (new_node->text == NULL)
-	{
-		free(new_node);
+	if (start > ft_strlen_gnl(s))
 		return (NULL);
-	}
-	while (i < BUFFER_SIZE)
+	if (len > ft_strlen_gnl(s + start))
+		len = ft_strlen_gnl(s + start);
+	substr = malloc((len + 1) * sizeof(char));
+	if (substr == NULL)
+		return (0);
+	substr2 = substr;
+	while (len--)
 	{
-		new_node->text[i] = '\0';
+		substr2[i] = s[start];
+		start++;
 		i++;
 	}
-	ft_strlcat_gnl(new_node->text, text, special_char_index);
-	new_node->next = NULL;
-	return (new_node);
+	substr2[i] = '\0';
+	return (substr);
 }
 
-void	ft_lstadd_back_list(t_strings **lst, char *text,
-		long special_char_index)
+size_t	ft_strlen_gnl(const char *str)
 {
-	t_strings	*temp;
+	int	cont;
 
-	temp = *lst;
-	if (*lst == NULL)
-	{
-		*lst = ft_new_node(text, special_char_index);
-		return ;
-	}
-	while (temp->next != NULL)
-	{
-		temp = temp->next;
-	}
-	temp->next = ft_new_node(text, special_char_index);
-}
-
-void	ft_strlcat_gnl(char *dst, const char *src, long special_char_index)
-{
-	unsigned int	i;
-	size_t			dest_length;
-
-	dest_length = 0;
-	i = 0;
-	while (dst[dest_length] != '\0')
-	{
-		dest_length++;
-	}
-	while (i < BUFFER_SIZE && src[i] != '\0')
-	{
-		dst[dest_length] = src[i];
-		if (special_char_index != -1 && (long)i == special_char_index)
-		{
-			dest_length++;
-			break ;
-		}
-		i++;
-		dest_length++;
-	}
-	dst[dest_length] = '\0';
-}
-
-void	ft_clean_buffer(long special_char_index, char *buffer)
-{
-	unsigned long	i;
-
-	i = 0;
-	if (special_char_index == -1)
-	{
-		while (i < BUFFER_SIZE)
-		{
-			buffer[i] = '\0';
-			i++;
-		}
-		return ;
-	}
-	special_char_index++;
-	while (special_char_index < BUFFER_SIZE)
-	{
-		buffer[i] = buffer[special_char_index];
-		i++;
-		special_char_index++;
-	}
-	while (i < BUFFER_SIZE)
-	{
-		buffer[i] = '\0';
-		i++;
-	}
+	cont = 0;
+	if (!str)
+		return (0);
+	while (str[cont])
+		cont++;
+	return (cont);
 }

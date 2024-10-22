@@ -3,131 +3,127 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: juestrel <juestrel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mfuente- <mfuente-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/18 12:44:16 by juestrel          #+#    #+#             */
-/*   Updated: 2024/02/23 13:10:59 by juestrel         ###   ########.fr       */
+/*   Created: 2023/12/16 11:41:49 by mfuente-          #+#    #+#             */
+/*   Updated: 2024/10/22 17:30:14 by mfuente-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-static char	*ft_parse_stash(t_strings **stash);
-static void	clean_list(t_strings *stash);
-static char	*find_next_line(t_strings **stash, int fd, char *buffer);
-static void	ft_check_buffer(char *buffer, t_strings **stash);
-
-char	*get_next_line(int fd)
+char	*ft_free(char *str)
 {
-	t_strings	*stash;
-	static char	buffer[BUFFER_SIZE + 1];
-	char		*line;
-	long		special_char_index;
-
-	if (fd < 0 || BUFFER_SIZE <= 0)
-		return (NULL);
-	stash = NULL;
-	ft_check_buffer(buffer, &stash);
-	if (stash != NULL && stash->text[0] == '\n')
+	if (str)
 	{
-		line = stash->text;
-		free(stash);
-		ft_clean_buffer(ft_strchr_line(buffer, '\n'), buffer);
-		return (line);
+		free(str);
+		str = NULL;
 	}
-	line = find_next_line(&stash, fd, buffer);
-	if (line == NULL && stash != NULL)
-		clean_list(stash);
-	if (line == NULL)
+	return (NULL);
+}
+
+//QUITA LA PRIMERA FILA DEL TEXT
+char	*new_text(char *text)
+{
+	char	*newt;
+	char	*ptr;
+	int		len;
+
+	ptr = ft_strchr_gnl(text, '\n');
+	if (!ptr)
+	{
+		newt = NULL;
+		return (ft_free(text));
+	}
+	else
+		len = (ptr - text) + 1;
+	if (!text[len])
+		return (ft_free(text));
+	newt = ft_substr_gnl(text, len, ft_strlen_gnl(text) - len);
+	ft_free(text);
+	if (!newt)
 		return (NULL);
-	special_char_index = ft_strchr_line(buffer, '\n');
-	if (special_char_index != -1)
-		ft_clean_buffer(special_char_index, buffer);
+	return (newt);
+}
+
+//SACA LA LINEA QUE NOS  INTERESA
+char	*the_line(char *text)
+{
+	char	*line;
+	char	*aux;
+	int		len;
+
+	aux = ft_strchr_gnl(text, '\n');
+	len = (aux - text) + 1;
+	line = ft_substr_gnl(text, 0, len);
+	if (!line)
+		return (NULL);
 	return (line);
 }
 
-static char	*find_next_line(t_strings **stash, int fd, char *buffer)
+//SACA UN BUFFER QUE CONTIENE '\N'
+char	*read_text(int fd, char *text)
 {
-	bool	found_char;
-	int		bytes_read;
+	int		allow;
+	char	*buffer;
 
-	found_char = false;
-	while (found_char == false)
+	allow = 1;
+	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (!buffer)
+		return (ft_free(text));
+	buffer[0] = '\0';
+	while (allow > 0 && !ft_strchr_gnl(buffer, '\n'))
 	{
-		bytes_read = read(fd, buffer, BUFFER_SIZE);
-		if (bytes_read != BUFFER_SIZE)
+		allow = read(fd, buffer, BUFFER_SIZE);
+		if (allow > 0)
 		{
-			if ((bytes_read == 0 && *stash == NULL) || 0 > bytes_read)
-			{
-				ft_clean_buffer(-1, buffer);
-				return (NULL);
-			}
-			buffer[bytes_read] = '\0';
-			ft_lstadd_back_list(stash, buffer, ft_strchr_line(buffer, '\n'));
-			if (ft_strchr_line(buffer, '\n') == -1)
-				ft_clean_buffer(-1, buffer);
-			break ;
+			buffer[allow] = '\0';
+			text = ft_strjoin_gnl(text, buffer);
 		}
-		if (ft_strchr_line(buffer, '\n') != -1)
-			found_char = true;
-		ft_lstadd_back_list(stash, buffer, ft_strchr_line(buffer, '\n'));
 	}
-	return (ft_parse_stash(stash));
+	ft_free(buffer);
+	if (allow == -1)
+		return (ft_free(text));
+	return (text);
 }
 
-static char	*ft_parse_stash(t_strings **stash)
+char	*get_next_line(int fd)
 {
-	t_strings		*temp;
-	char			*full_line;
-	unsigned int	counter;
+	static char	*text;
+	char		*line;
 
-	full_line = NULL;
-	temp = *stash;
-	counter = 0;
-	while (temp != NULL)
-	{
-		temp = temp->next;
-		counter++;
-	}
-	temp = *stash;
-	full_line = (char *)malloc((sizeof(char) * (BUFFER_SIZE * counter)) + 1);
-	full_line[0] = '\0';
-	while (temp != NULL)
-	{
-		ft_strlcat_gnl(full_line, temp->text, -1);
-		temp = temp->next;
-	}
-	clean_list(*stash);
-	return (full_line);
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
+	if ((text && !ft_strchr_gnl(text, '\n')) || !text)
+		text = read_text (fd, text);
+	if (!text)
+		return (NULL);
+	line = the_line(text);
+	if (!line)
+		return (ft_free(text));
+	text = new_text(text);
+	return (line);
 }
-
-static void	clean_list(t_strings *stash)
-{
-	t_strings	*temp;
-
-	while (stash != NULL)
-	{
-		temp = stash;
-		free(stash->text);
-		stash = stash->next;
-		free(temp);
-	}
-}
-
-static void	ft_check_buffer(char *buffer, t_strings **stash)
-{
-	long	i;
-	long	special_char_index;
+//EXPLICACION: Declaro el static --> meto en el static la linea con \N y mas
+//				 --> saco lo que me interesa de esa linea
+//				Elimino la linea ya proyectada del static y 
+//				dejar solo las que no han sido todavia proyectadas
+/* int main() {
+    int fd = open("archivo.txt", O_RDONLY);
+    char *line;
+	int i;
 
 	i = 0;
-	while (i < BUFFER_SIZE && buffer[0] != '\0')
-	{
-		if (buffer[i] != '\0')
-		{
-			special_char_index = ft_strchr_line(buffer, '\n');
-			ft_lstadd_back_list(stash, &buffer[i], special_char_index);
-			break ;
-		}
+    while (i < 6) {
+		line = get_next_line(fd);
+        printf("Línea leída %d: %s\n", i, line);
+        free(line);
 		i++;
-	}
-}
+    }
+    close(fd);
+
+    return 0;
+} */
