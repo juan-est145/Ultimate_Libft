@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mfuente- <mfuente-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: juestrel <juestrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 08:34:30 by mfuente-          #+#    #+#             */
-/*   Updated: 2024/10/22 17:30:06 by mfuente-         ###   ########.fr       */
+/*   Updated: 2024/10/29 18:21:17 by juestrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,8 @@ char	*ft_strjoin_gnl(char *s1, char *s2)
 		s1[0] = 0;
 	}
 	cont = 0;
-	final = (char *)malloc(sizeof(char) * ft_strlen_gnl(s1) + ft_strlen_gnl(s2) + 1);
+	final = (char *)malloc(sizeof(char) * ft_strlen_gnl(s1) + ft_strlen_gnl(s2)
+			+ 1);
 	if (!final)
 		return (ft_free(s1));
 	cont = aux_gnl(final, s1, cont);
@@ -66,7 +67,7 @@ char	*ft_strjoin_gnl(char *s1, char *s2)
 }
 
 char	*ft_substr_gnl(char *s, unsigned int start, size_t len)
-	{
+{
 	char	*substr;
 	char	*substr2;
 	int		i;
